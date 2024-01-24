@@ -1,13 +1,8 @@
-import express from 'express' // Import express framework
+import express from 'express'
+import dotenv from 'dotenv'
+import { EntryModel, CategoryModel } from './db.js'
 
-const categories = ['Food', 'Gaming', 'Coding', 'Other']
-
-const entries = [
-    { category: 'Food', title: 'My favorite food', content: 'My favorite food is pizza'},
-    { category: 'Gaming', title: 'My favorite game', content: 'My favorite game is Minecraft'},
-    { category: 'Coding', title: 'My favorite language', content: 'My favorite language is JavaScript'},
-    { category: 'Other', title: 'My favorite animal', content: 'My favorite animal is a cat'}
-]
+dotenv.config()
 
 const app = express() // Create an express app
 
@@ -17,36 +12,64 @@ app.get('/', (req, res) => {
     res.send({ info: 'Journal API'})
 })
 
-app.get('/categories', (req, res) => {
-    res.send(categories)
+app.get('/categories', async (req, res) => {
+    res.send(await CategoryModel.find())
 })
 
-app.get('/entries/:id', (req, res) => {
-    const entry = entries[req.params.id - 1 ] // Get the entry from the array using the id from the URL
+app.get('/entries', async (req, res) => {
+    res.send(await EntryModel.find())
+})
 
+app.get('/entries/:id', async (req, res) => {
+    const entry = await EntryModel.findById(req.params.id)
+    console.log(entry)
     if (entry) {
         console.log(req.params)
         res.send(entry) // Send the entry object as a JSON response
     } else {
         console.log(`Entry not found with id: ${req.params.id}`) // Log error to the console
-        res.status(404) // Set status to 404 as entry was not found
-        res.send({ error: 'Entry does not exist'}) // Send an error message
+        res.status(404).send({ error: 'Entry does not exist'}) // Set status to 404 as entry was not found
     }
 })
 
-app.get('/entries', (req, res) => {
-    res.send(entries)
+app.post('/entries', async (req, res) => {
+    try {
+        console.log(req.body) // Get the data from the request
+        // TODO: Validate the data
+        const insertedEntry = await EntryModel.create(req.body) // Push the new entry to the db
+        res.status(201).send(insertedEntry) // respond with 201 & the created entry
+    } catch (err) {
+        console.log(err)
+        res.status(400).send({ error: err })
+    }
 })
 
-app.post('/entries', (req, res) => {
-    // Get the data from the request
-    console.log(req.body)
-    // TODO: Validate the data
-    // Create a new entry object
-    // Push the new entry to the array
-    entries.push(req.body)
-    // respond with 201 & the created entry
-    res.status(201).send([entries.length -1])
+app.put('/entries/:id', async (req, res) => {
+    try {
+        const updateEntry = await EntryModel.findByIdAndUpdate(req.params.id ,req.body, { new: true })
+        if (updateEntry) {
+            res.send(updateEntry)
+        } else {
+            res.status(404).send({ error: 'Entry does not exist'})
+        }
+    }
+    catch (err) {
+        res.status(500).send({ error: err.message })
+    }
 })
 
-app.listen(4000) // Start the webserver on port 4000
+app.delete('/entries/:id', async (req, res) => {
+    try {
+        const deletedEntry = await EntryModel.findByIdAndDelete(req.params.id)
+        if (deletedEntry) {
+            res.send('Entry Deleted')
+        } else {
+            res.status(404).send({ error: 'Entry does not exist'})
+        }
+    }
+    catch (err) {
+        res.status(500).send({ error: err.message })
+    }
+})
+
+app.listen(process.env.PORT) // Start the webserver on port 4000
