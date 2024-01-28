@@ -16,16 +16,18 @@ const closeConnection = () => {
     mongoose.disconnect()
 }
 
+// Mongoose Schema & Models
 const entriesSchema = new mongoose.Schema({
-    category: {type: String, required: true},
+    category: {type: mongoose.ObjectId, ref: 'Category', required: true},
     title: {type: String, required: true},
     content: {type: String, required: true}
-})
+})/*, { _id: false }) */  // Disable _id for subdocuments entries
 
 const EntryModel = mongoose.model('Entry', entriesSchema)
 
 const categoriesSchema = new mongoose.Schema({
-    name: {type: String, required: true}
+    name: {type: String, required: true},
+    // entries: [entriesSchema]
 })
 
 const CategoryModel = mongoose.model('Category', categoriesSchema)

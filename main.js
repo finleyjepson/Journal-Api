@@ -34,12 +34,11 @@ app.get('/entries/:id', async (req, res) => {
 
 app.post('/entries', async (req, res) => {
     try {
-        console.log(req.body) // Get the data from the request
+        const cat = await CategoryModel.findOne({ name: req.body.category })
         // TODO: Validate the data
         const insertedEntry = await EntryModel.create(req.body) // Push the new entry to the db
         res.status(201).send(insertedEntry) // respond with 201 & the created entry
     } catch (err) {
-        console.log(err)
         res.status(400).send({ error: err })
     }
 })
