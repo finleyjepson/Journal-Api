@@ -19,7 +19,6 @@ const closeConnection = () => {
 // Mongoose Schema & Models
 const entriesSchema = new mongoose.Schema({
     category: {type: mongoose.ObjectId, ref: 'Category', required: true},
-    title: {type: String, required: true},
     content: {type: String, required: true}
 })/*, { _id: false }) */  // Disable _id for subdocuments entries
 

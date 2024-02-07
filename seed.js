@@ -48,17 +48,14 @@ console.log('Inserted categories')
 const entries = [
     {
         category: cats[0]._id,
-        title: 'My first entry',
         content: 'This is my first entry'
     },
     {
         category: cats[2]._id,
-        title: 'My second entry',
         content: 'This is my second entry'
     },
     {
         category: cats[3]._id,
-        title: 'My third entry',
         content: 'This is my third entry'
     }
 ]
