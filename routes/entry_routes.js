@@ -45,10 +45,10 @@ router.delete('/:id', async (req, res) => {
     try {
         const deletedEntry = await EntryModel.findByIdAndDelete(req.params.id)
         if (deletedEntry) {
-            res.send('Entry Deleted')
+            res.send({ message: 'Entry Deleted' })
         } else {
-            res.status(404).send({ error: 'Entry does not exist'})
-        }
+            res.status(404).send({ error: 'Entry does not exist' })
+        } 
     }
     catch (err) {
         res.status(500).send({ error: err.message })
