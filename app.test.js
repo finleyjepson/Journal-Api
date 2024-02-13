@@ -17,14 +17,24 @@ describe("App Test", () => {
           category: cats.body[0]._id,
           content: 'Jest test content'
         })
+
     
         expect(res.status).toBe(201)
         expect(res.header['content-type']).toContain('json')
+        expect(res.body._id).toBeDefined()
+        expect(res.body.category).toBeDefined()
+        expect(res.body.content).toBeDefined()
+
+        expect(res.body.category).toBeInstanceOf(Object)
+        expect(res.body.category._id).toBeDefined()
+        expect(res.body.category.name).toBeDefined()
         
+        expect(res.body._id).toBe(cats.body[0]._id)
+        expect(res.body.content).toBe('Jest test content')
     
         // Cleanup
         request(app).delete(`/entries/${res.body._id}`)
-      })
+    })
 
     describe("GET /categories", () => {
         let res
